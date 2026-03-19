@@ -5,6 +5,8 @@ import Start from "./components/Start";
 
 function App() {
   const [qwizStart, setQwizStart] = useState(false);
+  const [questionsList, setQuestionsList] = useState([]);
+  const [qwizEnd, setQwizEnd] = useState(false);
 
   const startQwiz = (formValues) => {
     const params = new URLSearchParams();
@@ -26,19 +28,45 @@ function App() {
         return response.json();
       })
       .then((data) => {
-        console.log(data.results);
         let questions = data.results.map((el) => {
           el.answers = el.incorrect_answers
             .concat(el.correct_answer)
             .sort(() => Math.random() - 0.5);
+          el.selected_answer = null;
 
           return el;
         });
+        console.log(questions);
+        setQuestionsList(questions);
+
         setQwizStart(true);
       });
   };
 
-  return <>{qwizStart ? <Questions /> : <Start startQwiz={startQwiz} />}</>;
+  function selectAnswer(questionIndex, answer) {
+    setQuestionsList((prev) =>
+      prev.map((item, index) => {
+        if (index === questionIndex) {
+          item.selected_answer = answer;
+        }
+        return item;
+      }),
+    );
+  }
+
+  return (
+    <>
+      {qwizStart ? (
+        <Questions
+          questionsList={questionsList}
+          qwizEnd={qwizEnd}
+          selectAnswer={selectAnswer}
+        />
+      ) : (
+        <Start startQwiz={startQwiz} />
+      )}
+    </>
+  );
 }
 
 export default App;
