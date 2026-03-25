@@ -8,6 +8,16 @@ function App() {
   const [questionsList, setQuestionsList] = useState([]);
   const [qwizEnd, setQwizEnd] = useState(false);
 
+  const playAgain = () => {
+    setQwizStart(false);
+    setQwizEnd(false);
+    setQuestionsList([]);
+  };
+
+  const endQwiz = () => {
+    setQwizEnd(true);
+  };
+
   const startQwiz = (formValues) => {
     const params = new URLSearchParams();
     if (formValues.amount > 0) {
@@ -61,6 +71,8 @@ function App() {
           questionsList={questionsList}
           qwizEnd={qwizEnd}
           selectAnswer={selectAnswer}
+          endQwiz={endQwiz}
+          playAgain={playAgain}
         />
       ) : (
         <Start startQwiz={startQwiz} />
