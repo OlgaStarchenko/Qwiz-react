@@ -1,22 +1,13 @@
-import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import "./App.css";
 import Questions from "./components/Questions";
 import Start from "./components/Start";
+import { setQuestionsList, setQwizStart } from "./store/qwizSlice";
 
 function App() {
-  const [qwizStart, setQwizStart] = useState(false);
-  const [questionsList, setQuestionsList] = useState([]);
-  const [qwizEnd, setQwizEnd] = useState(false);
+  const qwizStart = useSelector((state) => state.qwizStart);
 
-  const playAgain = () => {
-    setQwizStart(false);
-    setQwizEnd(false);
-    setQuestionsList([]);
-  };
-
-  const endQwiz = () => {
-    setQwizEnd(true);
-  };
+  const dispatch = useDispatch();
 
   const startQwiz = (formValues) => {
     const params = new URLSearchParams();
@@ -47,9 +38,9 @@ function App() {
           return el;
         });
         console.log(questions);
-        setQuestionsList(questions);
+        dispatch(setQuestionsList(questions));
 
-        setQwizStart(true);
+        dispatch(setQwizStart(true));
       });
   };
 
@@ -65,19 +56,7 @@ function App() {
   }
 
   return (
-    <>
-      {qwizStart ? (
-        <Questions
-          questionsList={questionsList}
-          qwizEnd={qwizEnd}
-          selectAnswer={selectAnswer}
-          endQwiz={endQwiz}
-          playAgain={playAgain}
-        />
-      ) : (
-        <Start startQwiz={startQwiz} />
-      )}
-    </>
+    <>{qwizStart ? <Questions selectAnswer={selectAnswer} /> : <Start />}</>
   );
 }
 

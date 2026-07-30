@@ -1,12 +1,16 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { setQwizStart } from "../store/qwizSlice";
 
-export default function Start({ startQwiz }) {
+export default function Start() {
   const [formValues, setFormValues] = useState({
     amount: "5",
     difficulty: "any",
     type: "any",
     category: "any",
   });
+
+  const dispatch = useDispatch();
 
   const handleChange = (keyName, value) => {
     setFormValues((prev) => ({ ...prev, [keyName]: value }));
@@ -94,7 +98,10 @@ export default function Start({ startQwiz }) {
           </select>
         </div>
       </div>
-      <button className="start__button" onClick={() => startQwiz(formValues)}>
+      <button
+        className="start__button"
+        onClick={() => dispatch(setQwizStart(formValues))}
+      >
         Start
       </button>
     </div>

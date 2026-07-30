@@ -1,13 +1,13 @@
 import React from "react";
 import parse from "html-react-parser";
+import { useDispatch, useSelector } from "react-redux";
+import { handlePlayAgain, setEndQwiz } from "../store/qwizSlice";
 
-export default function Question({
-  questionsList,
-  qwizEnd,
-  selectAnswer,
-  endQwiz,
-  playAgain,
-}) {
+export default function Question({ selectAnswer }) {
+  const qwizEnd = useSelector((state) => state.qwizEnd);
+  const questionsList = useSelector((state) => state.questionsList);
+
+  const dispatch = useDispatch();
   const allSelected = questionsList.every((item) => item.selected_answer);
 
   const correctAnswers = questionsList.filter(
@@ -59,7 +59,10 @@ export default function Question({
           <p className="response__counter__text">
             You scored {correctAnswers}/{questionsList.length} correct answers
           </p>
-          <button className="reset__button" onClick={playAgain}>
+          <button
+            className="reset__button"
+            onClick={dispatch(handlePlayAgain())}
+          >
             Play again
           </button>
         </div>
@@ -68,7 +71,7 @@ export default function Question({
           <button
             className="check__answers__button"
             disabled={!allSelected}
-            onClick={endQwiz}
+            onClick={dispatch(setEndQwiz())}
           >
             Check answers
           </button>
