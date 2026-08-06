@@ -14,7 +14,17 @@ export const qwizSlice = createSlice({
       state.qwizEnd = true;
     },
     setQuestionsList: (state, action) => {
-      state.questionsList = action.payload;
+      let questions = action.payload.results.map((el) => {
+        return {
+          ...el,
+          answers: [...el.incorrect_answers, el.correct_answer].sort(
+            () => Math.random() - 0.5,
+          ),
+          selected_answer: null,
+        };
+      });
+
+      state.questionsList = questions;
     },
     setQwizStart: (state) => {
       state.qwizStart = true;
@@ -24,8 +34,27 @@ export const qwizSlice = createSlice({
       state.qwizEnd = false;
       state.questionsList = [];
     },
+    selectAnswer: (state, action) => {
+      state.questionsList = state.questionsList.map((item, index) => {
+        if (index === action.payload.questionIndex) {
+          item.selected_answer = action.payload.answer;
+        }
+        return item;
+      });
+    },
   },
 });
 export const qwizReducer = qwizSlice.reducer;
-export const { setEndQwiz, handlePlayAgain, setQuestionsList, setQwizStart } =
-  qwizSlice.actions;
+export const isAllSelected = (state) =>
+  state.qwiz.questionsList.every((item) => item.selected_answer);
+export const getCorrectAnswers = (state) =>
+  state.qwiz.questionsList.filter(
+    (qwestion) => qwestion.selected_answer === qwestion.correct_answer,
+  ).length;
+export const {
+  setEndQwiz,
+  handlePlayAgain,
+  setQuestionsList,
+  setQwizStart,
+  selectAnswer,
+} = qwizSlice.actions;

@@ -1,18 +1,20 @@
 import React from "react";
 import parse from "html-react-parser";
 import { useDispatch, useSelector } from "react-redux";
-import { handlePlayAgain, setEndQwiz } from "../store/qwizSlice";
+import {
+  getCorrectAnswers,
+  handlePlayAgain,
+  isAllSelected,
+  selectAnswer,
+  setEndQwiz,
+} from "../store/qwizSlice";
 
-export default function Question({ selectAnswer }) {
-  const qwizEnd = useSelector((state) => state.qwizEnd);
-  const questionsList = useSelector((state) => state.questionsList);
+export default function Question() {
+  const { qwizEnd, questionsList } = useSelector((state) => state.qwiz);
+  const allSelected = useSelector(isAllSelected);
+  const correctAnswers = useSelector(getCorrectAnswers);
 
   const dispatch = useDispatch();
-  const allSelected = questionsList.every((item) => item.selected_answer);
-
-  const correctAnswers = questionsList.filter(
-    (qwestion) => qwestion.selected_answer === qwestion.correct_answer,
-  ).length;
 
   function getClassName(question, answer) {
     if (question.selected_answer === answer && !qwizEnd) {
@@ -43,7 +45,9 @@ export default function Question({ selectAnswer }) {
                   disabled={qwizEnd}
                   key={answerIndex}
                   className={`button__answer ${getClassName(question, answer)}`}
-                  onClick={() => selectAnswer(questionIndex, answer)}
+                  onClick={() =>
+                    dispatch(selectAnswer({ questionIndex, answer }))
+                  }
                 >
                   {parse(answer)}
                 </button>
@@ -61,7 +65,7 @@ export default function Question({ selectAnswer }) {
           </p>
           <button
             className="reset__button"
-            onClick={dispatch(handlePlayAgain())}
+            onClick={() => dispatch(handlePlayAgain())}
           >
             Play again
           </button>
@@ -71,7 +75,7 @@ export default function Question({ selectAnswer }) {
           <button
             className="check__answers__button"
             disabled={!allSelected}
-            onClick={dispatch(setEndQwiz())}
+            onClick={() => dispatch(setEndQwiz())}
           >
             Check answers
           </button>

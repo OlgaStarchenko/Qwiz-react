@@ -9,7 +9,9 @@ body {
   justify-content: center;
   align-items: center;
 }
-.start {
+.start__button:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 .start__title {
   color: rgb(50, 50, 119);
@@ -139,6 +141,11 @@ body {
   background-color: rgb(50, 50, 119);
   padding: 10px 50px;
   border-radius: 10px;
+}
+.error__message {
+  text-align: center;
+  margin-top: 10px;
+  color: red;
 }
 .hide {
   display: none;

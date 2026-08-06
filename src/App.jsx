@@ -3,9 +3,13 @@ import "./App.css";
 import Questions from "./components/Questions";
 import Start from "./components/Start";
 import { setQuestionsList, setQwizStart } from "./store/qwizSlice";
+import { useGetQwestionsListMutation } from "./api/qwizApi";
 
 function App() {
-  const qwizStart = useSelector((state) => state.qwizStart);
+  const { qwizStart } = useSelector((state) => state.qwiz);
+
+  const [getQwestionsList, { isLoading, isError }] =
+    useGetQwestionsListMutation();
 
   const dispatch = useDispatch();
 
@@ -24,39 +28,22 @@ function App() {
       params.append("category", formValues.category);
     }
 
-    fetch(`https://opentdb.com/api.php?${params}`)
-      .then((response) => {
-        return response.json();
-      })
+    getQwestionsList(params)
+      .unwrap()
       .then((data) => {
-        let questions = data.results.map((el) => {
-          el.answers = el.incorrect_answers
-            .concat(el.correct_answer)
-            .sort(() => Math.random() - 0.5);
-          el.selected_answer = null;
-
-          return el;
-        });
-        console.log(questions);
-        dispatch(setQuestionsList(questions));
-
-        dispatch(setQwizStart(true));
+        dispatch(setQwizStart());
+        dispatch(setQuestionsList(data));
       });
   };
 
-  function selectAnswer(questionIndex, answer) {
-    setQuestionsList((prev) =>
-      prev.map((item, index) => {
-        if (index === questionIndex) {
-          item.selected_answer = answer;
-        }
-        return item;
-      }),
-    );
-  }
-
   return (
-    <>{qwizStart ? <Questions selectAnswer={selectAnswer} /> : <Start />}</>
+    <>
+      {qwizStart ? (
+        <Questions />
+      ) : (
+        <Start startQwiz={startQwiz} isLoading={isLoading} isError={isError} />
+      )}
+    </>
   );
 }
 

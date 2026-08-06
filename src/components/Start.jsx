@@ -1,16 +1,12 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { setQwizStart } from "../store/qwizSlice";
 
-export default function Start() {
+export default function Start({ startQwiz, isLoading, isError }) {
   const [formValues, setFormValues] = useState({
     amount: "5",
     difficulty: "any",
     type: "any",
     category: "any",
   });
-
-  const dispatch = useDispatch();
 
   const handleChange = (keyName, value) => {
     setFormValues((prev) => ({ ...prev, [keyName]: value }));
@@ -100,10 +96,13 @@ export default function Start() {
       </div>
       <button
         className="start__button"
-        onClick={() => dispatch(setQwizStart(formValues))}
+        disabled={isLoading}
+        onClick={() => startQwiz(formValues)}
       >
         Start
       </button>
+
+      {isError && <p className="error__message">Произошла ошибка</p>}
     </div>
   );
 }
